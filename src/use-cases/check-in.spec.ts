@@ -2,7 +2,8 @@ import { InMemoryCheckInsRepository } from "@/repositories/in-memory/in-memory-c
 import { InMemoryGymsRepository } from "@/repositories/in-memory/in-memory-gyms-repository";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CheckInUseCase } from "./check-in";
-import { Decimal } from "@prisma/client/runtime/library";
+import { MaxDistanceError } from "./errors/max-distance-error";
+import { MaxNumberOfCheckInsError } from "./errors/max-number-off-check-ins-error";
 
 let checkInsRepository: InMemoryCheckInsRepository
 let gymsRepository: InMemoryGymsRepository
@@ -12,14 +13,15 @@ describe('Check-in Use Case', () => {
     checkInsRepository = new InMemoryCheckInsRepository()
     gymsRepository = new InMemoryGymsRepository()
     sut = new CheckInUseCase(checkInsRepository, gymsRepository)
-    gymsRepository.items.push({
+    await gymsRepository.create({
       id: 'gym-01',
       title: 'JavaScript Gym',
       description: '',
       phone: '',
-      latitude: new Decimal(-30.037369),
-      longitude: new Decimal(-51.1899153)
+      latitude: -30.037369,
+      longitude: -51.1899153
     })
+
     vi.useFakeTimers()
   })
 
@@ -57,7 +59,7 @@ describe('Check-in Use Case', () => {
         userLatitude: -30.037369,
         userLongitude: -51.1899153
       }),
-    ).rejects.toBeInstanceOf(Error)
+    ).rejects.toBeInstanceOf(MaxNumberOfCheckInsError)
   })
 
   it('should not be able to check in twice in different days', async () => {
@@ -83,13 +85,13 @@ describe('Check-in Use Case', () => {
 
 
   it('should not be able to check in on distant gym', async () => {
-    gymsRepository.items.push({
+    await gymsRepository.create({
       id: 'gym-02',
       title: 'JavaScript Gym2',
       description: '',
       phone: '',
-      latitude: new Decimal(-30.036945),
-      longitude: new Decimal(-51.198197)
+      latitude: -30.036945,
+      longitude: -51.198197
     })
 
     await expect(() =>
@@ -99,7 +101,7 @@ describe('Check-in Use Case', () => {
         userLatitude: -29.037369,
         userLongitude: -51.1899153
       })
-    ).rejects.toBeInstanceOf(Error)
+    ).rejects.toBeInstanceOf(MaxDistanceError)
 
 
   })
