@@ -7,7 +7,6 @@ import { Decimal } from "@prisma/client/runtime/library";
 let checkInsRepository: InMemoryCheckInsRepository
 let gymsRepository: InMemoryGymsRepository
 let sut: CheckInUseCase
-
 describe('Check-in Use Case', () => {
   beforeEach(async () => {
     checkInsRepository = new InMemoryCheckInsRepository()
@@ -18,8 +17,8 @@ describe('Check-in Use Case', () => {
       title: 'JavaScript Gym',
       description: '',
       phone: '',
-      latitude: new Decimal(-23.533773),
-      longitude: new Decimal(-46.625290)
+      latitude: new Decimal(-30.037369),
+      longitude: new Decimal(-51.1899153)
     })
     vi.useFakeTimers()
   })
@@ -34,8 +33,8 @@ describe('Check-in Use Case', () => {
     const { checkIn } = await sut.execute({
       gymId: 'gym-01',
       userId: 'user-01',
-      userLatitude: -23.533773,
-      userLongitude: -46.625290
+      userLatitude: -30.037369,
+      userLongitude: -51.1899153
     })
 
     expect(checkIn.id).toEqual(expect.any(String))
@@ -47,16 +46,16 @@ describe('Check-in Use Case', () => {
     await sut.execute({
       gymId: 'gym-01',
       userId: 'user-01',
-      userLatitude: -23.533773,
-      userLongitude: -46.625290
+      userLatitude: -30.037369,
+      userLongitude: -51.1899153
     })
 
     await expect(() =>
       sut.execute({
         gymId: 'gym-01',
         userId: 'user-01',
-        userLatitude: -23.533773,
-        userLongitude: -46.625290
+        userLatitude: -30.037369,
+        userLongitude: -51.1899153
       }),
     ).rejects.toBeInstanceOf(Error)
   })
@@ -67,19 +66,42 @@ describe('Check-in Use Case', () => {
     await sut.execute({
       gymId: 'gym-01',
       userId: 'user-01',
-      userLatitude: -23.533773,
-      userLongitude: -46.625290
+      userLatitude: -30.037369,
+      userLongitude: -51.1899153
     })
     vi.setSystemTime(new Date(2022, 0, 21, 8, 0, 0))
 
     const { checkIn } = await sut.execute({
       gymId: 'gym-01',
       userId: 'user-01',
-      userLatitude: -23.533773,
-      userLongitude: -46.625290
+      userLatitude: -30.037369,
+      userLongitude: -51.1899153
     })
 
     expect(checkIn.id).toEqual(expect.any(String))
+  })
+
+
+  it('should not be able to check in on distant gym', async () => {
+    gymsRepository.items.push({
+      id: 'gym-02',
+      title: 'JavaScript Gym2',
+      description: '',
+      phone: '',
+      latitude: new Decimal(-30.036945),
+      longitude: new Decimal(-51.198197)
+    })
+
+    await expect(() =>
+      sut.execute({
+        gymId: 'gym-02',
+        userId: 'user-01',
+        userLatitude: -29.037369,
+        userLongitude: -51.1899153
+      })
+    ).rejects.toBeInstanceOf(Error)
+
+
   })
 
 })
