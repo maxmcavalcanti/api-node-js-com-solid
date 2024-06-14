@@ -11,9 +11,9 @@
 - [x] Deve ser possível obter o número de check-ins realizados pelo usuário logado;
 - [x] Deve ser possível o usuário obter seu histórico de check-ins;
 - [x] Deve ser possível o usuário buscar academias próximas (10km);
-- [ ] Deve ser possível o usuário buscar academias pelo nome;
+- [x] Deve ser possível o usuário buscar academias pelo nome;
 - [x] Deve ser possível o usuário realizar check-in em uma academia;
-- [ ] Deve ser possível validar o check-in de um usuário;
+- [x] Deve ser possível validar o check-in de um usuário;
 - [x] Deve ser possível cadastrar uma academia;
  
 ## Regras de negócio
