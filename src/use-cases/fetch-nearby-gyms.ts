@@ -11,7 +11,7 @@ interface FetchNearbyUseCaseResponse {
   gyms: Gym[]
 }
 
-export class FetchNearbyUseCase {
+export class FetchNearbyGymsUseCase {
   constructor(private gymsRepository: GymsRepository) { }
 
   async execute({ userLatitude, userLongitude }: FetchNearbyUseCaseRequest): Promise<FetchNearbyUseCaseResponse> {
